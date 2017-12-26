@@ -1,0 +1,4 @@
+.idea
+output
+zhongrj/mnist/MNIST_data*
+zhongrj/model/*_checkpoint
