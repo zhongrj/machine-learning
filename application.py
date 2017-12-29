@@ -1,8 +1,9 @@
 import zhongrj.model.STN_CNN as STN_CNN
 
 application = [
-    STN_CNN, """侦测并识别图片中的数字"""
+    STN_CNN.mnist_distortions,  # 侦测并识别图片中的数字
+    STN_CNN.catvsdog,  # 猫狗大战
 ]
 
 if __name__ == '__main__':
-    application[0].sample()
+    application[0]()

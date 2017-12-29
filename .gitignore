@@ -1,4 +1,5 @@
 .idea
 output
-zhongrj/mnist/MNIST_data*
+zhongrj/data/MNIST_data*
+zhongrj/data/catvsdog_data
 zhongrj/model/*_checkpoint

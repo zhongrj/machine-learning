@@ -6,18 +6,19 @@ from zhongrj.utils.path_util import *
 FILE_DIR = get_file_dir(__file__)
 STORE_DIR = FILE_DIR + 'MNIST_data_distortions/'
 make_dir(STORE_DIR)
+FILE_NAME = 'mnist_distortions_40x40.npz'
 
 
-def load_distortions_data():
+def load_data():
     """读取数据"""
     try:
-        return np.load(STORE_DIR + 'mnist_distortions_40x40.npz')
+        return np.load(STORE_DIR + FILE_NAME)
     except:
-        print('找不到', STORE_DIR + 'mnist_distortions_40x40.npz', ' 生成数据中 慢慢等吧 ...')
-        return store_distortions_data()
+        print('找不到', STORE_DIR + FILE_NAME, ' 生成数据中 慢慢等吧 ...')
+        return store_data()
 
 
-def store_distortions_data():
+def store_data():
     """存储数据"""
     mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)  # 下载并加载mnist数据
     print('生成训练数据...')
@@ -30,7 +31,7 @@ def store_distortions_data():
         'test_x': test_image_list,
         'test_y': test_label_list
     }
-    np.savez(STORE_DIR + 'mnist_distortions_40x40.npz', **mnist_distortions)
+    np.savez(STORE_DIR + FILE_NAME, **mnist_distortions)
     return mnist_distortions
 
 
@@ -105,12 +106,17 @@ def __create_distortions_data(images, labels):
 if __name__ == '__main__':
     # store_distortions_data()
 
+    # import zhongrj.utils.view_util as view
+    #
+    # mnist_distortions = load_data()
+    #
+    # def data_gen():
+    #     mask = np.random.choice(10000, 18)
+    #     yield np.append(mnist_distortions['train_x'][mask], mnist_distortions['test_x'][mask], axis=0)
+    #
+    # view.show_dynamic_image(data_gen)
+
     import zhongrj.utils.view_util as view
 
-    mnist_distortions = load_distortions_data()
-
-    def data_gen():
-        mask = np.random.choice(10000, 18)
-        yield np.append(mnist_distortions['train_x'][mask], mnist_distortions['test_x'][mask], axis=0)
-
-    view.show_dynamic_image(data_gen)
+    mnist_distortions = load_data()
+    view.show_image(mnist_distortions['train_x'][:20], 10, text=['hw~'] * 10)
