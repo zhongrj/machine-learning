@@ -22,6 +22,32 @@ def show_image(image_list, n_each_row=6, cmap='gray', text=None):
     plt.show()
 
 
+def join_images(image_list, n_each_row=6):
+    """
+    合成图片
+    :param image_list: 图像列表
+    :param n_each_row: 每行数量
+    :return: 合成图
+    """
+    n = len(image_list)
+    col = n_each_row
+    row = (n - 1) // col + 1
+
+    shape = list(image_list[0].squeeze().shape)
+    new_shape = [row * shape[0], col * shape[1]] + shape[2:]
+
+    result = np.zeros(new_shape)
+    for i in range(n):
+        r, c = i // col, i % col
+        result[r * shape[0]: (r + 1) * shape[0], c * shape[1]:(c + 1) * shape[1]] = image_list[i].squeeze()
+
+    return result
+
+
+def save_image_join(image_list, name='temp', n_each_row=6, cmap='gray', text=None):
+    save_image([join_images(image_list, n_each_row=n_each_row)], name, 1, cmap=cmap, text=text)
+
+
 def save_image(image_list, name='temp', n_each_row=6, cmap='gray', text=None):
     """
     生成图片
@@ -32,9 +58,9 @@ def save_image(image_list, name='temp', n_each_row=6, cmap='gray', text=None):
     :param text: 文本标注
     :return: 
     """
-    image_list = [im if im.shape[2] == 1 else im.astype(np.uint8) for im in image_list]
+    image_list = [im if len(im.shape) == 2 or im.shape[2] == 1 else im.astype(np.uint8) for im in image_list]
     __draw_image(image_list, n_each_row, cmap, text)
-    file = output_dir + '%s.png' % name
+    file = output_dir + '%s.jpg' % name
     make_dir(get_elder(file))
     plt.savefig(file, bbox_inches='tight')
     plt.clf()
@@ -94,7 +120,9 @@ def __draw_image(image_list, n_each_row, cmap, text=None):
     col = n_each_row
     row = (n - 1) // col + 1
     if text is not None:
-        row = row + 1
+        row = row + (len(text) - 1) // col + 1
+    if row > 1:
+        plt.figure(figsize=(col, row))
     for i in range(n):
         plt.subplot(row, col, i + 1)
         plt.axis('off')
@@ -105,11 +133,13 @@ def __draw_image(image_list, n_each_row, cmap, text=None):
         for i in range(len(text)):
             plt.subplot(row, col, n + i + 1)
             plt.axis('off')
-            plt.text(0, 0, text[i], fontdict={'size': 20})
+            plt.text(0, 0, text[i], fontdict={'size': 12})
 
 
 if __name__ == '__main__':
     image = np.zeros([20, 40])
     image = draw_rectangle(image, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
-    print(image[15][1])
-    show_image([image])
+
+    image2 = np.zeros([20, 40])
+    image2 = draw_rectangle(image2, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
+    show_image([join_images([image, image2], 3)], 1)

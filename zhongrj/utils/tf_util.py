@@ -1,5 +1,4 @@
 import tensorflow as tf
-from zhongrj.utils.path_util import *
 
 
 def init_sess(saver, checkpoint_dir):

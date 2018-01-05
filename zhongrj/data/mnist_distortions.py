@@ -1,7 +1,7 @@
-import tensorflow.examples.tutorials.mnist.input_data as input_data
 import numpy as np
 import math
 from zhongrj.utils.path_util import *
+import zhongrj.data.mnist as mnist_data
 
 FILE_DIR = get_file_dir(__file__)
 STORE_DIR = FILE_DIR + 'MNIST_data_distortions/'
@@ -20,11 +20,11 @@ def load_data():
 
 def store_data():
     """存储数据"""
-    mnist = input_data.read_data_sets("MNIST_data/", one_hot=True)  # 下载并加载mnist数据
+    mnist = mnist_data.load_data()
     print('生成训练数据...')
-    train_image_list, train_label_list = __create_distortions_data(mnist.train.images, mnist.train.labels)
+    train_image_list, train_label_list = __create_distortions_data(mnist['train_x'], mnist['train_y'])
     print('生成测试数据...')
-    test_image_list, test_label_list = __create_distortions_data(mnist.test.images, mnist.test.labels)
+    test_image_list, test_label_list = __create_distortions_data(mnist['test_x'], mnist['test_y'])
     mnist_distortions = {
         'train_x': train_image_list,
         'train_y': train_label_list,

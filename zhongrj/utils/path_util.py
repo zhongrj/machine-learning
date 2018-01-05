@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 def get_file_dir(file):
@@ -21,3 +22,9 @@ def make_dir(dir):
     """创建目录"""
     if not os.path.exists(dir):
         os.makedirs(dir)
+
+
+def del_dir_files(dir):
+    """删除文件夹下的所有文件"""
+    shutil.rmtree(dir)
+    make_dir(dir)
