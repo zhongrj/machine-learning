@@ -1,11 +1,14 @@
-import tensorflow as tf
 from zhongrj.utils.math_util import *
+from zhongrj.utils.tf_util import *
 
 """
     模型Utils
 """
 
-W_initializer = tf.truncated_normal_initializer(stddev=0.1)
+W_initializer = tf.truncated_normal_initializer(stddev=0.2)
+
+
+# W_initializer = None
 
 
 def Flatten(layer):
@@ -21,7 +24,7 @@ def Dense(input_tensor,
 
 def Conv2d(input_tensor,
            filters,
-           kernel_size=(5, 5),
+           kernel_size=(3, 3),
            strides=(2, 2),
            padding='SAME',
            name=None,
@@ -37,7 +40,7 @@ def Conv2d(input_tensor,
 
 def DeConv2d(input_tensor,
              filters,
-             kernel_size=(5, 5),
+             kernel_size=(3, 3),
              strides=(2, 2),
              padding='SAME',
              name=None,
@@ -107,7 +110,42 @@ def DeCNN(decnn_input,
             output = act(batch_noraml(output, training=is_train, name='deconv{}_bn'.format(i)))
 
         output = DeConv2d(output, output_dims[2], name='deconv{}'.format(len(cnn_units) - 1))
-        return tf.slice(output, [0, 0, 0, 0], [-1] + output_dims)
+    return tf.slice(output, [0, 0, 0, 0], [-1] + output_dims)
+
+
+def IMG_g_IMG(image,
+              name='img_g_img',
+              cnn_units=list(),
+              act=tf.nn.relu,
+              batch_noraml=True,
+              is_train=True,
+              reuse=None):
+    batch_noraml = tf.layers.batch_normalization if batch_noraml else lambda o, **kwargs: o
+
+    # with tf.variable_scope(name, reuse=reuse):
+    #     output = image
+    #     for i, units in enumerate(cnn_units):
+    #         output = Conv2d(output, units, name='conv{}'.format(i))
+    #         output = act(batch_noraml(output, training=is_train, name='conv{}_bn'.format(i)))
+    #     # output_shape, output = tf.shape(output), Flatten(output)
+    #     # output = Dense(output, output.shape[1], name='fc')
+    #     # output = batch_noraml(output, training=is_train, name='fc_bn')
+    #     # output = act(output)
+    #     # output = tf.reshape(output, output_shape)
+    #     for i, units in enumerate(reversed(cnn_units[:-1])):
+    #         output = DeConv2d(output, units, name='deconv{}'.format(i))
+    #         output = act(batch_noraml(output, training=is_train, name='deconv{}_bn'.format(i)))
+    #     output = DeConv2d(output, image.shape[3], name='deconv{}'.format(len(cnn_units) - 1))
+
+    with tf.variable_scope(name, reuse=reuse):
+        output = image
+        for i, units in enumerate(cnn_units):
+            output = Conv2d(output, units, strides=(1, 1), name='conv{}'.format(i))
+            output = act(batch_noraml(output, training=is_train, name='conv{}_bn'.format(i)))
+        output = Conv2d(output, image.shape[3], strides=(1, 1), name='conv{}'.format(len(cnn_units)))
+
+    output = tf.nn.tanh(output)
+    return output
 
 
 def STN(cnn_input,
@@ -132,7 +170,7 @@ def STN(cnn_input,
 
         # 转成默认值
         output = output * tf.Variable(tf.zeros([6])) + tf.reshape(tf.Variable(init_value), [-1])
-        if limit_rotate:  # 限制旋转
+        if limit_rotate:  # 限制旋转 todo 有bug
             output = output * tf.reshape(tf.constant([[1., 0, 1.],
                                                       [0, 1., 1.]]), [-1])
         return output

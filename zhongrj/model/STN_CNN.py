@@ -1,7 +1,5 @@
-from zhongrj.model.BaseModel import BaseModel
+from zhongrj.model.BaseModel import *
 from zhongrj.reference.spatial_transformer_network import spatial_transformer_network as stn
-from zhongrj.utils.model_util import *
-from zhongrj.utils.view_util import *
 
 """
     总结和问题：
@@ -24,7 +22,7 @@ class STN_CNN(BaseModel):
                  trans_dims=None,
                  batch=50,
                  limit_rotate=False):
-        BaseModel.__init__(self, name)
+        BaseModel.__init__(self, name, batch)
 
         self.x_width, self.x_height, self.x_channel = x_dims
         self.y_classes = y_classes
@@ -35,14 +33,13 @@ class STN_CNN(BaseModel):
         self.classifier_dnn_units = classifier_dnn_units
 
         self.learning_rate = learning_rate
-        self.batch = batch
         if trans_dims is None:
             trans_dims = x_dims
         self.trans_width, self.trans_height, self.trans_channel = trans_dims
         self.limit_rotate = limit_rotate
 
         self.__build()
-        self._init_sess(graph=True)
+        self._init_sess(graph=False)
 
     def __build(self):
         with tf.name_scope('inputs'):
@@ -85,9 +82,8 @@ class STN_CNN(BaseModel):
         with tf.name_scope('loss'):
             cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y_predict, labels=self.y_actual)
             self.loss = tf.reduce_mean(cross_entropy)
-        with tf.name_scope('optimizer'):
-            self.optimizer = tf.train.AdamOptimizer(learning_rate=self.learning_rate).minimize(self.loss,
-                                                                                               self.global_step)
+        with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)), tf.name_scope('optimizer'):
+            self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss, self.global_step)
         with tf.name_scope('accuracy'):
             correct_pred = tf.equal(tf.argmax(self.y_predict, 1), tf.argmax(self.y_actual, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
@@ -119,7 +115,8 @@ class STN_CNN(BaseModel):
             # [im for im in image_[:10]] +
             self.__draw_detected(image_[:24], theta_[:24]) +
             [im for im in image_trans_[:24]],
-            self.output_dir + name, n_each_row=8,
+            name=self.output_dir + name,
+            n_each_row=8,
             text=predict_[:24].argmax(axis=1)
         )
 
@@ -131,7 +128,7 @@ class STN_CNN(BaseModel):
         accumulated_accuracy = 1 / self.y_classes
         sample_feed_dict = {
             self.x: images[np.random.choice(len(images), self.batch)],
-            self.is_train: True  # False
+            self.is_train: False
         }
         while True:
             batch_mask = np.random.choice(len(images), self.batch)
@@ -164,14 +161,14 @@ class STN_CNN(BaseModel):
         feed_dict = {
             self.x: images[test_mask],
             self.y_actual: labels[test_mask],
-            self.is_train: True  # False
+            self.is_train: False
         }
         accuracy = self.sess.run(self.accuracy, feed_dict)
         print('accuracy ', accuracy)
         for i in range(10):
             feed_dict = {
                 self.x: images[np.random.choice(len(images), 100)],
-                self.is_train: True  # False
+                self.is_train: False
             }
             self.__generate_image('test_{}'.format(i), feed_dict)
 
@@ -184,7 +181,7 @@ def mnist_distortions():
     from zhongrj.data.mnist_distortions import load_data
 
     model = STN_CNN(
-        name='mnist_distortions',
+        name='STN_CNN_mnist_distortions',
         x_dims=[40, 40, 1],
         trans_dims=[15, 20, 1],
         y_classes=10,
@@ -210,7 +207,7 @@ def catvsdog():
     from zhongrj.data.catvsdog import load_data
 
     model = STN_CNN(
-        name='catvsdog',
+        name='STN_CNN_catvsdog',
         x_dims=[150, 150, 3],
         trans_dims=[60, 60, 3],
         y_classes=2,
@@ -222,7 +219,7 @@ def catvsdog():
 
         learning_rate=4e-4,
         batch=40,
-        limit_rotate=True,
+        # limit_rotate=True, # todo 这里有bug
     )
 
     print('Loading Data ...')

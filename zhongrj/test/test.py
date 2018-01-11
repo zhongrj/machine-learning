@@ -46,13 +46,16 @@ print([1, 2] + list())
 lambda_test = lambda o, **kwargs: o
 print(lambda_test(123, test=1123, test1=123))
 
+print(np.concatenate([np.array(a), np.array(a)]))
 
 # 修改文件名
 # import os
 # import sys
 #
-# path = "D:\study\machine-learning\output\mnist_distortions"
+# path = "D:\study\generate_anime_face"
 # for (path, dirs, files) in os.walk(path):
 #     for filename in files:
-#         # print(filename.replace('png', 'jpg'))
-#         os.rename(path + "\\" + filename, path + "\\" + filename.replace('jpg', 'png'))
+#         if filename.find('00.') != -1 or filename.find('25.') != -1 or filename.find('50.') != -1 or filename.find(
+#                 '75.') != -1:
+#             # print(filename)
+#             os.rename(path + "\\" + filename, path + "\\" + filename.replace('sample', 'aaaaaa'))

@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from PIL import Image, ImageDraw
 import cv2
+from skimage import io
 import numpy as np
 from zhongrj.utils.path_util import *
 
@@ -136,6 +137,18 @@ def __draw_image(image_list, n_each_row, cmap, text=None):
             plt.text(0, 0, text[i], fontdict={'size': 12})
 
 
+def resize(image, new_shape):
+    return cv2.resize(image, new_shape, interpolation=cv2.INTER_CUBIC)
+
+
+def bgr2gray(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+
+def load_img(path):
+    return io.imread(path)
+
+
 if __name__ == '__main__':
     image = np.zeros([20, 40])
     image = draw_rectangle(image, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
@@ -143,3 +156,6 @@ if __name__ == '__main__':
     image2 = np.zeros([20, 40])
     image2 = draw_rectangle(image2, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
     show_image([join_images([image, image2], 3)], 1)
+
+    show_image([image], 1)
+    show_image([resize(image, (20, 20))], 1)

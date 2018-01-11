@@ -1,7 +1,6 @@
 .idea
 __pycache__
 output
-zhongrj/data/MNIST_data*
-zhongrj/data/catvsdog_data
-zhongrj/model/*_checkpoint
-zhongrj/model/*_logs
+checkpoint
+logs
+zhongrj/data/*_data*

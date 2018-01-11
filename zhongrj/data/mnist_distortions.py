@@ -15,10 +15,10 @@ def load_data():
         return np.load(STORE_DIR + FILE_NAME)
     except:
         print('找不到', STORE_DIR + FILE_NAME, ' 生成数据中 慢慢等吧 ...')
-        return store_data()
+        return __store_data()
 
 
-def store_data():
+def __store_data():
     """存储数据"""
     mnist = mnist_data.load_data()
     print('生成训练数据...')

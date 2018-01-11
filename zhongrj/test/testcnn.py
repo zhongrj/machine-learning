@@ -11,15 +11,16 @@ y_predict = CNN(x_image,
                 'CNN',
                 [16, 32],
                 [1024, 256],
-                batch_noraml=False,
+                batch_noraml=True,
                 is_train=is_train)
 
 # y_predict = CNN_deprecated(x_image, is_train, 10, 'CNN', 3, 2, tf.nn.relu)
-[print(param) for param in tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, 'CNN')]
+[print(param) for param in tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'CNN')]
 
 cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y_predict, labels=y_actual)
 loss = tf.reduce_mean(cross_entropy)
-optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
+with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)):
+    optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)
 correct_pred = tf.equal(tf.argmax(y_predict, 1), tf.argmax(y_actual, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 
@@ -28,7 +29,7 @@ train_x, train_y, test_x, test_y = data['train_x'], data['train_y'], data['test_
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(1000):
+    for i in range(500):
         mask = np.random.choice(len(train_x), 100)
         feed_dict = {
             x: train_x[mask],
