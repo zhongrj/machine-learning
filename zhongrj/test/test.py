@@ -48,6 +48,30 @@ print(lambda_test(123, test=1123, test1=123))
 
 print(np.concatenate([np.array(a), np.array(a)]))
 
+print(np.hstack(([1], [2])))
+
+print(np.hstack((1, True, False)))
+
+d = np.arange(9).reshape([3, 3])
+for row in d:
+    row[0] = 100
+print(d)
+
+e = f = 1
+print(e)
+print(f)
+
+g = np.arange(0, 9).reshape([3, 3]).astype(np.float32)
+h = g[:, 2]
+g[:, 2] = (h - h.mean()) / h.std()
+print(g)
+
+print(1 > -np.inf)
+
+for i in range(10):
+    print(np.random.choice(2, p=np.array([0.1, 0.9])))
+
+
 # 修改文件名
 # import os
 # import sys

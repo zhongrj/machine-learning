@@ -129,6 +129,7 @@ class DiscoGAN(BaseModel):
     def __generate_image(self, name, feed_dict):
         print('Painting ...')
         A_g_B_, B_g_A_ = self.sess.run([image_deprocess(self.A_g_B), image_deprocess(self.B_g_A)], feed_dict)
+        # A_g_B_, B_g_A_ = self.sess.run([image_deprocess(self.A_g_B), image_deprocess(self.A_g_B_g_A)], feed_dict)
         # A_g_B_, B_g_A_ = self.sess.run([self.A_g_B, self.B_g_A], feed_dict)
         save_image(
             np.concatenate(
@@ -208,13 +209,11 @@ class DiscoGAN(BaseModel):
             if i_step % sample_interval == 0:
                 self.__generate_image('sample_{}'.format(i_step // sample_interval), sample_feed_dict)
                 # self.__generate_image('random_{}'.format(i_step // sample_interval), feed_dict)
-            if i_step % 50 == 0:
-                self._save_sess()
+            if i_step % 100 == 0:
+                self.save_sess()
 
     def test(self, A_img, B_img):
         print('Test ...')
-        A_img = resize(A_img, (self.A_width, self.A_height))
-        B_img = resize(B_img, (self.B_width, self.B_height))
         self.__generate_image('test', feed_dict={
             self.A: A_img,
             self.B: B_img,
@@ -259,12 +258,22 @@ def transform_face():
         name='DiscoGAN_transform_face',
         A_dims=[48, 48, 3],
         B_dims=[48, 48, 3],
-        g_cnn_units=[50, 80, 50],
-        d_cnn_units=[20, 40],
-        d_dnn_units=[2000, 500],
-        g_learning_rate=1e-3,
-        d_learning_rate=1e-3,
-        batch=100
+        # g_cnn_units=[50, 80, 50],
+        # d_cnn_units=[20, 40],
+        # d_dnn_units=[2000, 500],
+        # g_learning_rate=1e-3,
+        # d_learning_rate=1e-3,
+        # g_cnn_units=[20, 20, 20],
+        # d_cnn_units=[20, 20, 20],
+        # d_dnn_units=[600, 200],
+        # g_learning_rate=1e-3,
+        # d_learning_rate=1e-3,
+        g_cnn_units=[10, 10, 10],
+        d_cnn_units=[10, 10],
+        d_dnn_units=[600, 200],
+        g_learning_rate=3e-3,
+        d_learning_rate=3e-3,
+        batch=50
     )
 
     print('Loading data ...')
@@ -277,7 +286,8 @@ def transform_face():
         A_imgs = lovely_gril[np.random.choice(len(lovely_gril), 16)]
         B_imgs = anime_face[np.random.choice(len(anime_face), 16)]
         for i in range(8):
-            A_imgs[i] = load_img('C:/Users/lenovo/Desktop/faces/test/{}.jpg'.format(i))
+            A_imgs[i] = resize(load_img('C:/Users/lenovo/Desktop/faces/test/{}.jpg'.format(i)),
+                               (model.A_width, model.A_height))
         model.test(A_img=A_imgs, B_img=B_imgs)
 
 

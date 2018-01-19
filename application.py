@@ -1,6 +1,8 @@
 import zhongrj.model.STN_CNN as STN_CNN
 import zhongrj.model.DCGAN as DCGAN
 import zhongrj.model.DiscoGAN as DiscoGAN
+import zhongrj.model.DQN as DQN
+import zhongrj.model.PolicyGradient as PolicyGradient
 
 application = [
     STN_CNN.mnist_distortions,  # 侦测并识别图片中的数字
@@ -9,6 +11,8 @@ application = [
     DCGAN.generate_anime_face,  # 生成二次元妹子
     DiscoGAN.transform_mnist,  # mnist数字颜色转换
     DiscoGAN.transform_face(),  # 真人二次元转换
+    DQN.cart_pole(),  # CartPole小游戏
+    PolicyGradient.cart_pole(),  # CartPole小游戏
 ]
 
 if __name__ == '__main__':

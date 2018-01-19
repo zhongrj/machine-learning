@@ -151,7 +151,7 @@ class STN_CNN(BaseModel):
 
             save_interval = one_epoch_step // 10
             if i_global % save_interval == 0:
-                self._save_sess()
+                self.save_sess()
                 self.__generate_image('random_{}'.format(i_global // save_interval), feed_dict)
                 self.__generate_image('sample_{}'.format(i_global // save_interval), sample_feed_dict)
 

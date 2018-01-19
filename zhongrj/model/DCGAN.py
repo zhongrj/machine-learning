@@ -34,7 +34,7 @@ class DCGAN(BaseModel):
                  d_learning_rate,
                  batch):
         BaseModel.__init__(self, name, batch,
-                           sample_init=np.random.normal(0, 1, size=(batch, z_dims)).astype(np.float32))
+                           sample_init=np.random.normal(0, 1, size=(64, z_dims)).astype(np.float32))
         self.z_dims = z_dims
         self.x_width, self.x_height, self.x_channel = image_dims
         self.cnn_units = cnn_units
@@ -171,11 +171,12 @@ class DCGAN(BaseModel):
             for i in range(2):
                 i_step = training_valid(self.g_optimizer, feed_dict)
 
-            save_interval = one_epoch_step // 1
-            if i_step % save_interval == 0:
-                self._save_sess()
-                self.__generate_image(z_sample, self.output_dir + 'sample_%s' % (i_step // save_interval))
-                # self.__generate_image(feed_dict[self.z], self.output_dir + 'random_%s' % (i_step // save_interval))
+            sample_interval = 50
+            if i_step % sample_interval == 0:
+                self.__generate_image(z_sample, self.output_dir + 'sample_%s' % (i_step // sample_interval))
+                # self.__generate_image(feed_dict[self.z], self.output_dir + 'random_%s' % (i_step // sample_interval))
+            if i_step % 100 == 0:
+                self.save_sess()
 
     def test(self):
         print('Test ...')
@@ -199,9 +200,9 @@ def generate_mnist():
         image_dims=[28, 28, 1],
         cnn_units=[8, 16],
         dnn_units=[512, 256],
-        g_learning_rate=2e-3,
+        g_learning_rate=1e-3,
         d_learning_rate=1e-3,
-        batch=200
+        batch=100
     )
 
     print('Loading Data ...')
@@ -220,12 +221,22 @@ def generate_anime_face():
     model = DCGAN(
         name='DCGAN_generate_anime_face',
         z_dims=100,
-        image_dims=[24, 24, 3],
-        cnn_units=[128, 256],
-        dnn_units=[4096, 1024],
+        # image_dims=[24, 24, 1],
+        # cnn_units=[16, 32],
+        # dnn_units=[800, 300],
+        # g_learning_rate=1e-3,
+        # d_learning_rate=1e-3,
+        # image_dims=[48, 48, 3],
+        # cnn_units=[40, 80, 120],
+        # dnn_units=[2000, 500],
+        # g_learning_rate=2e-4,
+        # d_learning_rate=2e-4,
+        image_dims=[48, 48, 3],
+        cnn_units=[20, 20, 20],
+        dnn_units=[500, 200],
         g_learning_rate=1e-3,
         d_learning_rate=1e-3,
-        batch=50
+        batch=64
     )
 
     print('Loading Data ...')
