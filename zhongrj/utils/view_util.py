@@ -85,7 +85,16 @@ def show_dynamic_image(data_gen, n_each_row=6, cmap='gray', interval=1000):
     plt.show()
 
 
-def draw_rectangle(image, first, second, third, fourth, color):
+def draw_rectangle(image, left_top, right_bottom, color, text=None):
+    image = image.squeeze().copy()
+    thickness = 1
+    cv2.rectangle(image, tuple(left_top), tuple(right_bottom), color, thickness)
+    if text:
+        cv2.putText(image, text, tuple(left_top), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, thickness)
+    return image
+
+
+def draw_surround(image, first, second, third, fourth, color):
     first = tuple([first[i] for i in range(2)])
     second = tuple([second[i] for i in range(2)])
     third = tuple([third[i] for i in range(2)])
@@ -151,11 +160,13 @@ def load_img(path):
 
 if __name__ == '__main__':
     image = np.zeros([20, 40])
-    image = draw_rectangle(image, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
+    image = draw_surround(image, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
 
     image2 = np.zeros([20, 40])
-    image2 = draw_rectangle(image2, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
+    image2 = draw_surround(image2, np.array([1, 1]), (1, 15), [10, 20], [12, 3], 1)
     show_image([join_images([image, image2], 3)], 1)
 
     show_image([image], 1)
     show_image([resize(image, (20, 20))], 1)
+
+    show_image([draw_rectangle(image, (5, 6), (10, 20), 1)])

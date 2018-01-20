@@ -18,6 +18,12 @@ d3x3 = np.arange(9).reshape((3, 3))
 print(d3x3 == 0)
 print(d3x3[d3x3 == 0])
 
+e = tf.placeholder(tf.float32)
+f = tf.placeholder(tf.bool)
+g = tf.constant(2, tf.float32)
+i = tf.constant([2, 2])
+h = tf.where(i == 2, g, e)
+
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     print(sess.run(b * a))
@@ -37,3 +43,6 @@ with tf.Session() as sess:
     print(sess.run(tf.cast(tf.constant([True, False]), tf.float32)))
 
     print(sess.run(tf.nn.softmax([2., 3., 5.])))
+
+    print(sess.run(i == 2))
+    print(sess.run(h, {f: True, e: 1}))

@@ -25,7 +25,7 @@ def __store_data():
         for i in range(len(files)):
             image = mpimg.imread(path + "/" + files[i])
             image = resize(image, (48, 48))
-            image = bgr2gray(image)
+            # image = bgr2gray(image)
             train_x.append(image)
             if i % 100 == 0:
                 print("\r{}% 完成~".format(i * 100 / len(files)), end='')

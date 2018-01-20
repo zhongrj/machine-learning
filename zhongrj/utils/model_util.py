@@ -22,10 +22,20 @@ def Dense(input_tensor,
     return tf.layers.dense(input_tensor, units, name=name, kernel_initializer=kernel_initializer)
 
 
+def MaxPooling2D(input_tensor,
+                 pool_size=2,
+                 strides=2,
+                 padding='valid'):
+    return tf.layers.max_pooling2d(input_tensor,
+                                   pool_size=pool_size,
+                                   strides=strides,
+                                   padding=padding)
+
+
 def Conv2d(input_tensor,
            filters,
            kernel_size=(3, 3),
-           strides=(2, 2),
+           strides=(1, 1),
            padding='SAME',
            name=None,
            kernel_initializer=W_initializer):
@@ -69,7 +79,8 @@ def CNN(cnn_input,
         output = cnn_input
         for i, units in enumerate(cnn_units):
             output = Conv2d(output, units, name='conv{}'.format(i))
-            output = act(batch_noraml(output, training=is_train, name='conv{}_bn'.format(i)))
+            output = MaxPooling2D(batch_noraml(output, training=is_train, name='conv{}_bn'.format(i)))
+            output = act(output)
 
         output = Flatten(output)
 

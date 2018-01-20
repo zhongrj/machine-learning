@@ -12,7 +12,11 @@ def init_sess(saver, checkpoint_dir):
     return sess
 
 
-def cross_entropy_mean(labels, logits):
+def softmax_cross_entropy_mean(labels, logits):
+    return tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels, logits=logits))
+
+
+def sigmoid_cross_entropy_mean(labels, logits):
     return tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(labels=labels, logits=logits))
 
 

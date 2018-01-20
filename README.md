@@ -12,6 +12,7 @@ import zhongrj.model.DCGAN as DCGAN
 import zhongrj.model.DiscoGAN as DiscoGAN
 import zhongrj.model.DQN as DQN
 import zhongrj.model.PolicyGradient as PolicyGradient
+import zhongrj.model.AutoEncoder as AutoEncoder
 
 application = [
     STN_CNN.mnist_distortions,  # 侦测并识别图片中的数字
@@ -22,6 +23,8 @@ application = [
     DiscoGAN.transform_face(),  # 真人二次元转换
     DQN.cart_pole(),  # CartPole小游戏
     PolicyGradient.cart_pole(),  # CartPole小游戏
+    AutoEncoder.encode_decode_mnist(),  # AutoEncoder手写数字
+    AutoEncoder.semi_supervised_mnist(),  # 手写数字Semi-Supervised
 ]
 
 if __name__ == '__main__':
@@ -72,10 +75,19 @@ DiscoGAN(未完成)
 
 
 
-### sample 7 CartPole小游戏
+### sample 7 8 CartPole小游戏
 
 DQN、PolicyGradient
 
 <div>
   <img width="200px" src="https://github.com/zrj19931211/resource/blob/master/image/dqn_cartpole.gif"><br/>
+</div>
+
+
+### sample 9 手写数字Encoder
+
+AutoEncoder
+
+<div>
+  <img width="300px" src="https://github.com/zrj19931211/resource/blob/master/image/autoencoder_mnist.png"><br/>
 </div>

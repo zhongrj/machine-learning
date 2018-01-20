@@ -25,14 +25,14 @@ def __store_data():
     train_image_list, train_label_list = __create_distortions_data(mnist['train_x'], mnist['train_y'])
     print('生成测试数据...')
     test_image_list, test_label_list = __create_distortions_data(mnist['test_x'], mnist['test_y'])
-    mnist_distortions = {
+    result = {
         'train_x': train_image_list,
         'train_y': train_label_list,
         'test_x': test_image_list,
         'test_y': test_label_list
     }
-    np.savez(STORE_DIR + FILE_NAME, **mnist_distortions)
-    return mnist_distortions
+    np.savez(STORE_DIR + FILE_NAME, **result)
+    return result
 
 
 def __create_distortions_data(images, labels):
@@ -55,13 +55,12 @@ def __create_distortions_data(images, labels):
                                   [(1 - math.cos(a)) * 13.5 + 13.5 * math.sin(a),
                                    (1 - math.cos(a)) * 13.5 - 13.5 * math.sin(a)]])
         # 缩放
-        x_zoom = np.random.randint(8, 12) / 10
-        y_zoom = np.random.randint(8, 12) / 10
-        zoom_matrix = np.array([[x_zoom, 0],
-                                [0, y_zoom],
-                                [(1 - x_zoom) * 13.5, (1 - y_zoom) * 13.5]])
+        x_scale, y_scale = np.random.randint(8, 12) / 10, np.random.randint(8, 12) / 10
+        scale_matrix = np.array([[x_scale, 0],
+                                [0, y_scale],
+                                [(1 - x_scale) * 13.5, (1 - y_scale) * 13.5]])
         # 平移
-        translate_matrix = np.array([[1, 0],
+        shift_matrix = np.array([[1, 0],
                                      [0, 1],
                                      [np.random.randint(-13, 1), np.random.randint(-13, 1)]])
 
@@ -75,11 +74,11 @@ def __create_distortions_data(images, labels):
                 )
                 x, y = np.matmul(
                     np.array([x, y, 1]),
-                    zoom_matrix
+                    scale_matrix
                 )
                 x, y = np.matmul(
                     np.array([x, y, 1]),
-                    translate_matrix
+                    shift_matrix
                 )
                 value = 0
                 try:

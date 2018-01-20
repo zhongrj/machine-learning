@@ -91,11 +91,11 @@ class DiscoGAN(BaseModel):
         _, self.A_g_B_g_A_fake = d_A(self.A_img, self.A_g_B_g_A)
 
         with tf.variable_scope('A_g_B_loss'):
-            self.A_g_B_loss = cross_entropy_mean(tf.ones_like(self.A_g_B_fake), self.A_g_B_fake) + \
+            self.A_g_B_loss = sigmoid_cross_entropy_mean(tf.ones_like(self.A_g_B_fake), self.A_g_B_fake) + \
                               huber_loss(self.A_g_B_g_A, self.A_img)
         with tf.variable_scope('d_B_loss'):
-            self.d_B_loss = cross_entropy_mean(tf.ones_like(self.d_B_real), self.d_B_real) + \
-                            cross_entropy_mean(tf.zeros_like(self.A_g_B_fake), self.A_g_B_fake)
+            self.d_B_loss = sigmoid_cross_entropy_mean(tf.ones_like(self.d_B_real), self.d_B_real) + \
+                            sigmoid_cross_entropy_mean(tf.zeros_like(self.A_g_B_fake), self.A_g_B_fake)
 
         self.B_g_A = B_g_A(self.B_img, True)
         self.d_A_real, self.B_g_A_fake = d_A(self.A_img, self.B_g_A, True)
@@ -103,11 +103,11 @@ class DiscoGAN(BaseModel):
         _, self.B_g_A_g_B_fake = d_B(self.B_img, self.B_g_A_g_B, True)
 
         with tf.name_scope('B_g_A_loss'):
-            self.B_g_A_loss = cross_entropy_mean(tf.ones_like(self.B_g_A_fake), self.B_g_A_fake) + \
+            self.B_g_A_loss = sigmoid_cross_entropy_mean(tf.ones_like(self.B_g_A_fake), self.B_g_A_fake) + \
                               huber_loss(self.B_g_A_g_B, self.B_img)
         with tf.name_scope('d_A_loss'):
-            self.d_A_loss = cross_entropy_mean(tf.ones_like(self.d_A_real), self.d_A_real) + \
-                            cross_entropy_mean(tf.zeros_like(self.B_g_A_fake), self.B_g_A_fake)
+            self.d_A_loss = sigmoid_cross_entropy_mean(tf.ones_like(self.d_A_real), self.d_A_real) + \
+                            sigmoid_cross_entropy_mean(tf.zeros_like(self.B_g_A_fake), self.B_g_A_fake)
 
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)), tf.name_scope('optimizer'):
             self.g_optimizer = tf.train.AdamOptimizer(self.g_learning_rate) \
@@ -128,15 +128,19 @@ class DiscoGAN(BaseModel):
 
     def __generate_image(self, name, feed_dict):
         print('Painting ...')
-        A_g_B_, B_g_A_ = self.sess.run([image_deprocess(self.A_g_B), image_deprocess(self.B_g_A)], feed_dict)
-        # A_g_B_, B_g_A_ = self.sess.run([image_deprocess(self.A_g_B), image_deprocess(self.A_g_B_g_A)], feed_dict)
+        A_g_B_, A_g_B_g_A_, B_g_A_, B_g_A_g_B_ = self.sess.run(
+            [image_deprocess(self.A_g_B), image_deprocess(self.A_g_B_g_A),
+             image_deprocess(self.B_g_A), image_deprocess(self.B_g_A_g_B)], feed_dict)
+        # A_g_B_, B_g_A_ = self.sess.run([image_deprocess(self.A_g_B), image_deprocess(self.B_g_A)], feed_dict)
         # A_g_B_, B_g_A_ = self.sess.run([self.A_g_B, self.B_g_A], feed_dict)
         save_image(
             np.concatenate(
                 [feed_dict[self.A][:16],
                  A_g_B_[:16],
+                 A_g_B_g_A_[:16],
                  feed_dict[self.B][:16],
-                 B_g_A_[:16]]
+                 B_g_A_[:16],
+                 B_g_A_g_B_[:16]]
             ),
             name=self.output_dir + name,
             n_each_row=8,
@@ -205,11 +209,11 @@ class DiscoGAN(BaseModel):
                 i_step = training_valid(self.g_optimizer, feed_dict)
 
             # sample_interval = one_epoch_step // 10
-            sample_interval = 50
+            sample_interval = 25
             if i_step % sample_interval == 0:
                 self.__generate_image('sample_{}'.format(i_step // sample_interval), sample_feed_dict)
                 # self.__generate_image('random_{}'.format(i_step // sample_interval), feed_dict)
-            if i_step % 100 == 0:
+            if i_step % 50 == 0:
                 self.save_sess()
 
     def test(self, A_img, B_img):
@@ -271,9 +275,9 @@ def transform_face():
         g_cnn_units=[10, 10, 10],
         d_cnn_units=[10, 10],
         d_dnn_units=[600, 200],
-        g_learning_rate=3e-3,
-        d_learning_rate=3e-3,
-        batch=50
+        g_learning_rate=2e-4,
+        d_learning_rate=2e-4,
+        batch=100
     )
 
     print('Loading data ...')

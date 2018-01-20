@@ -71,6 +71,18 @@ print(1 > -np.inf)
 for i in range(10):
     print(np.random.choice(2, p=np.array([0.1, 0.9])))
 
+basic = np.linspace(-1, 1, 10)
+x = np.tile(basic[:, np.newaxis], (1, len(basic))).reshape([-1])
+y = np.tile(basic, (len(basic),))
+print(np.dstack((x, y)).squeeze())
+
+l = np.array([1, 2, 3, 4])
+# print(np.random.choice(3, 2))
+print(l[np.array([1, 2])])
+
+for i, j in zip([1, 2, 3], [2, 3]):
+    print(i, '---', j)
+
 
 # 修改文件名
 # import os

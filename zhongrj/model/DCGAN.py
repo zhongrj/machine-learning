@@ -2,16 +2,15 @@ from zhongrj.model.BaseModel import *
 
 """
     总结和问题：
-        1.  batch_normalization时而好train时而难train, 这个问题有待思考
-        2.  batch_normalization是分training和testing的, 因为mean和variance需要train
-        3.  有无激活函数差别是很大的 (只有隐藏层应该放activation?)
-        4.  先normalization后activation可以避免gradient vanishing?
-        5.  tf.layers.conv2d不需要maxpooling? 根据strides来pooling?
-        6.  params_initialize也是一件很重要的事情, 选择tf.truncated_normal_initializer()更好?
-        7.  LeakyReLU很重要, 原因不详
-        9.  一个一直不懂的问题: 怎么调参...
-            关于GAN调参：
-                g和d的learning_rate设为不一样的值更好，分别观察其对loss的变化
+        1.  batch_normalization是分training和testing的, 因为mean和variance需要train
+        2.  记得不要漏了激活函数
+        3.  先normalization后activation可以避免gradient vanishing?
+        4.  tf.layers.conv2d不需要maxpooling? 根据strides来pooling?
+        5.  params_initialize也是一件很重要的事情, 选择tf.truncated_normal_initializer()更好?
+        6.  LeakyReLU很重要, 原因不详
+        7.  大概明白为什么图像要经过tanh的预处理了，为了使input有正有负（如果input全正或全负，所有的w会朝着同一个方向走，
+            但如果w实际上是有正有负的，那么会绕很多弯路）至于scale到[-1, 1]，1有没有其他讲究就不清楚了。
+        9.  关于GAN调参：
                 （试验中, 经常看到学来学去都是很模糊的图, 开始一直以为是g_learning_rate太小, 学得太慢，
                 后来把g_learning_rate设得更小, 却意外的发现学得更快, g_loss下降得更快,
                 仔细想想, 这件事也很合理, 事实上不会调得很小）
@@ -232,10 +231,10 @@ def generate_anime_face():
         # g_learning_rate=2e-4,
         # d_learning_rate=2e-4,
         image_dims=[48, 48, 3],
-        cnn_units=[20, 20, 20],
-        dnn_units=[500, 200],
-        g_learning_rate=1e-3,
-        d_learning_rate=1e-3,
+        cnn_units=[20, 30, 40],
+        dnn_units=[1000, 400],
+        g_learning_rate=2e-4,
+        d_learning_rate=2e-4,
         batch=64
     )
 

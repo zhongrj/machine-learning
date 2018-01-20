@@ -3,9 +3,9 @@ from zhongrj.reference.spatial_transformer_network import spatial_transformer_ne
 
 """
     总结和问题：
-        1. spatial_transformer_network到底是怎么产生gradient的?
+        1. spatial_transformer_network是怎么产生gradient的?
         2. theta的初始值很重要[[1, 0, 0], [0, 1, 0]]
-        3. batch_normalization Test的时候 training设为False? 但是这样结果很差...why
+        3. batch_normalization Test的时候 training设为False
 """
 
 
@@ -80,8 +80,7 @@ class STN_CNN(BaseModel):
 
     def __def_optimizer(self):
         with tf.name_scope('loss'):
-            cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=self.y_predict, labels=self.y_actual)
-            self.loss = tf.reduce_mean(cross_entropy)
+            self.loss = softmax_cross_entropy_mean(logits=self.y_predict, labels=self.y_actual)
         with tf.control_dependencies(tf.get_collection(tf.GraphKeys.UPDATE_OPS)), tf.name_scope('optimizer'):
             self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss, self.global_step)
         with tf.name_scope('accuracy'):
@@ -99,7 +98,7 @@ class STN_CNN(BaseModel):
                                                              [x_, y_, self.x_height / 2]]),
                            axis=1).squeeze() + np.array([self.x_width / 2, self.x_height / 2])).astype(np.int)
 
-        return [draw_rectangle(
+        return [draw_surround(
             images[i],
             center_affine(thetas[i], 0, 0) + np.array([-1, -1]),
             center_affine(thetas[i], 0, self.x_height) + np.array([-1, 1]),
@@ -123,12 +122,12 @@ class STN_CNN(BaseModel):
     def train(self, images, labels):
         print('Training ...')
         one_epoch_step = len(images) // self.batch
+        print('one_epoch_step: ', one_epoch_step)
         images = images.reshape([-1, self.x_width * self.x_height * self.x_channel])
         labels = labels.reshape([-1, self.y_classes])
-        accumulated_accuracy = 1 / self.y_classes
         sample_feed_dict = {
-            self.x: images[np.random.choice(len(images), self.batch)],
-            self.is_train: False
+            self.x: images[self.sess.run(self.sample)],
+            self.is_train: True
         }
         while True:
             batch_mask = np.random.choice(len(images), self.batch)
@@ -138,25 +137,25 @@ class STN_CNN(BaseModel):
                 self.y_actual: batch[1],
                 self.is_train: True
             }
-            _, i_global = self.sess.run([self.optimizer, self.global_step], feed_dict)
+            _, i_global, accuracy_, loss_ = self.sess.run(
+                [self.optimizer, self.global_step, self.accuracy, self.loss], feed_dict)
 
-            if i_global % (one_epoch_step // 20) == 0:
-                accuracy_, loss_, predict_, = self.sess.run([self.accuracy, self.loss, self.y_predict], feed_dict)
+            if i_global % 10 == 0:
                 print('step ', i_global)
                 print('accuracy ', accuracy_)
                 print('loss ', loss_)
-                print('predict ', predict_[:10].argmax(axis=1))
-                accumulated_accuracy = accumulated_accuracy * 0.8 + accuracy_ * 0.2
-                print('total_accuracy ', accumulated_accuracy, '\n')
 
-            save_interval = one_epoch_step // 10
+            save_interval = 100
             if i_global % save_interval == 0:
-                self.save_sess()
                 self.__generate_image('random_{}'.format(i_global // save_interval), feed_dict)
                 self.__generate_image('sample_{}'.format(i_global // save_interval), sample_feed_dict)
+            if i_global % 500 == 0:
+                self.save_sess()
 
     def test(self, images, labels):
         print('Test ...')
+        images = images.reshape([-1, self.x_width * self.x_height * self.x_channel])
+        labels = labels.reshape([-1, self.y_classes])
         test_mask = np.random.choice(len(images), 100)
         feed_dict = {
             self.x: images[test_mask],
@@ -167,7 +166,7 @@ class STN_CNN(BaseModel):
         print('accuracy ', accuracy)
         for i in range(10):
             feed_dict = {
-                self.x: images[np.random.choice(len(images), 100)],
+                self.x: images[np.random.choice(len(images), 50)],
                 self.is_train: False
             }
             self.__generate_image('test_{}'.format(i), feed_dict)
@@ -189,7 +188,7 @@ def mnist_distortions():
         stn_dnn_units=[1024, 256],
         classifier_cnn_units=[16, 32],
         classifier_dnn_units=[512, 128],
-        learning_rate=1e-4,
+        learning_rate=1e-3,
         batch=50
     )
 
@@ -197,9 +196,9 @@ def mnist_distortions():
     data = load_data()
 
     if MODE == 'train':
-        model.train(data['train_x'].reshape([-1, 40 * 40]), data['train_y'])
+        model.train(data['train_x'], data['train_y'])
     elif MODE == 'test':
-        model.test(data['test_x'].reshape([-1, 40 * 40]), data['test_y'])
+        model.test(data['test_x'], data['test_y'])
 
 
 def catvsdog():
@@ -211,24 +210,21 @@ def catvsdog():
         x_dims=[150, 150, 3],
         trans_dims=[60, 60, 3],
         y_classes=2,
-
-        stn_cnn_units=[16, 32, 64],
-        stn_dnn_units=[2048, 512],
-        classifier_cnn_units=[16, 32],
-        classifier_dnn_units=[1024, 256],
-
-        learning_rate=4e-4,
-        batch=40,
-        # limit_rotate=True, # todo 这里有bug
+        stn_cnn_units=[20, 20, 20],
+        stn_dnn_units=[1000, 200],
+        classifier_cnn_units=[10, 10, 10],
+        classifier_dnn_units=[400, 200],
+        learning_rate=5e-4,
+        batch=50,
     )
 
     print('Loading Data ...')
     data = load_data()
 
     if MODE == 'train':
-        model.train(data['train_x'].reshape([-1, 150 * 150]), data['train_y'])
+        model.train(data['train_x'], data['train_y'])
     elif MODE == 'test':
-        model.test(data['test_x'].reshape([-1, 150 * 150]), data['test_y'])
+        model.test(data['test_x'], data['test_y'])
 
 
 if __name__ == '__main__':
