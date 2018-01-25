@@ -1,7 +1,7 @@
 from zhongrj.model.BaseModel import *
 
 
-class PolicyGradient(BaseModel):
+class DDPG(BaseModel):
     def __init__(self,
                  name,
                  n_features,
@@ -83,8 +83,8 @@ def maze():
     from zhongrj.reference.maze_env import Maze
     env = Maze()
 
-    model = PolicyGradient(
-        name='PolicyGradient_MAZE',
+    model = DDPG(
+        name='DDPG_MAZE',
         n_features=env.n_features,
         n_actions=env.n_actions,
         dnn_units=[10],
@@ -101,8 +101,8 @@ def mountain_car():
     import gym
     env = gym.make('MountainCar-v0').unwrapped
 
-    model = PolicyGradient(
-        name='PolicyGradient_MountainCar',
+    model = DDPG(
+        name='DDPG_MountainCar',
         n_features=env.observation_space.shape[0],
         n_actions=env.action_space.n,
         dnn_units=[20, 20],
@@ -122,8 +122,8 @@ def cart_pole():
     import gym
     env = gym.make('CartPole-v0').unwrapped
 
-    model = PolicyGradient(
-        name='PolicyGradient_CartPole',
+    model = DDPG(
+        name='DDPG_CartPole',
         n_features=env.observation_space.shape[0],
         n_actions=env.action_space.n,
         dnn_units=[20, 20],

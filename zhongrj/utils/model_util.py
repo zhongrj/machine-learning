@@ -50,7 +50,7 @@ def Conv2d(input_tensor,
 
 def DeConv2d(input_tensor,
              filters,
-             kernel_size=(3, 3),
+             kernel_size=(2, 2),
              strides=(2, 2),
              padding='SAME',
              name=None,

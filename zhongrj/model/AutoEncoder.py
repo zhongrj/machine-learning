@@ -104,9 +104,9 @@ def mnist_autoencoder_model():
         name='AutoEncoder_mnist',
         x_dims=[28, 28, 1],
         y_dims=2,
-        cnn_units=[16, 32],
-        dnn_units=[1024, 256],
-        learning_rate=2e-4,
+        cnn_units=[8, 8],
+        dnn_units=[400, 100],
+        learning_rate=1e-3,
         batch=100
     )
 
@@ -167,10 +167,10 @@ def anime():
         name='AutoEncoder_anime',
         x_dims=[48, 48, 3],
         y_dims=10,
-        cnn_units=[],
-        dnn_units=[4000, 1000, 200],
-        learning_rate=2e-4,
-        batch=100
+        cnn_units=[40, 40, 40],
+        dnn_units=[1024, 256],
+        learning_rate=4e-4,
+        batch=50
     )
 
     if MODE == 'train':
@@ -180,4 +180,4 @@ def anime():
 
 
 if __name__ == '__main__':
-    encode_decode_mnist()
+    anime()
