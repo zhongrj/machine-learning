@@ -137,4 +137,4 @@ def cart_pole():
 
 
 if __name__ == '__main__':
-    mountain_car()
+    cart_pole()

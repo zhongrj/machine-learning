@@ -36,7 +36,7 @@ def Conv2d(input_tensor,
            filters,
            kernel_size=(3, 3),
            strides=(1, 1),
-           padding='SAME',
+           padding='same',
            name=None,
            kernel_initializer=W_initializer):
     return tf.layers.conv2d(input_tensor,

@@ -28,3 +28,8 @@ def del_dir_files(dir):
     """删除文件夹下的所有文件"""
     shutil.rmtree(dir)
     make_dir(dir)
+
+
+def read(file):
+    """读取文件内容"""
+    return open(file, 'r').read()

@@ -7,6 +7,9 @@ make_dir(STORE_DIR)
 
 
 def load_data():
+    """
+    若无法下载, 手动下载：https://github.com/zrj19931211/resource/tree/master/data/MNIST_data
+    """
     mnist = input_data.read_data_sets(STORE_DIR, one_hot=True)  # 下载并加载mnist数据
     return {
         'train_x': mnist.train.images,

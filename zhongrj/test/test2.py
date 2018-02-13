@@ -24,6 +24,9 @@ g = tf.constant(2, tf.float32)
 i = tf.constant([2, 2])
 h = tf.where(i == 2, g, e)
 
+m = tf.constant(np.arange(120).reshape((2, 3, 4, 5)))
+
+
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     print(sess.run(b * a))
@@ -44,5 +47,8 @@ with tf.Session() as sess:
 
     print(sess.run(tf.nn.softmax([2., 3., 5.])))
 
-    print(sess.run(i == 2))
     print(sess.run(h, {f: True, e: 1}))
+
+    print(sess.run(tf.round(0.51)))
+
+    print(sess.run(m))

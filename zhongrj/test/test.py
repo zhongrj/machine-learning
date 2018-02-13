@@ -83,6 +83,17 @@ print(l[np.array([1, 2])])
 for i, j in zip([1, 2, 3], [2, 3]):
     print(i, '---', j)
 
+print(np.tile([1, 0], (10,)))
+
+o = {
+    'temp': np.array([1, 2])
+}
+print(o)
+
+import math
+
+n = 10000
+print(n * math.tan(math.pi / n))
 
 # 修改文件名
 # import os

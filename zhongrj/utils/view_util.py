@@ -10,6 +10,9 @@ PROJECT_DIR = get_project_dir()
 output_dir = PROJECT_DIR + 'output/'
 make_dir(output_dir)
 
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
 
 def show_image(image_list, n_each_row=6, cmap='gray', text=None):
     """
@@ -59,7 +62,6 @@ def save_image(image_list, name='temp', n_each_row=6, cmap='gray', text=None):
     :param text: 文本标注
     :return: 
     """
-    image_list = [im if len(im.shape) == 2 or im.shape[2] == 1 else im.astype(np.uint8) for im in image_list]
     __draw_image(image_list, n_each_row, cmap, text)
     file = output_dir + '%s.jpg' % name
     make_dir(get_elder(file))
@@ -126,6 +128,8 @@ def __draw_image(image_list, n_each_row, cmap, text=None):
     :param text: 
     :return: 
     """
+    image_list = [im if len(im.shape) == 2 or im.shape[2] == 1 else im.astype(np.uint8) for im in image_list]
+
     n = len(image_list)
     col = n_each_row
     row = (n - 1) // col + 1
@@ -147,7 +151,7 @@ def __draw_image(image_list, n_each_row, cmap, text=None):
 
 
 def resize(image, new_shape):
-    return cv2.resize(image, new_shape, interpolation=cv2.INTER_CUBIC)
+    return cv2.resize(image, tuple(new_shape), interpolation=cv2.INTER_CUBIC)
 
 
 def bgr2gray(image):

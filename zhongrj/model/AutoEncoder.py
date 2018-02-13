@@ -65,8 +65,10 @@ class AutoEncoder(BaseModel):
 
     def train(self, x):
         x = x.reshape([-1, self.x_width, self.x_height, self.x_channel])
+        # sample_mask = self.sess.run(self.sample)
+        sample_mask = np.random.choice(len(x), 24)
         sample_feed_dict = {
-            self.x: x[self.sess.run(self.sample)],
+            self.x: x[sample_mask],
             self.is_train: False
         }
         while True:
@@ -89,14 +91,21 @@ class AutoEncoder(BaseModel):
         basic = np.linspace(-1, 1, n)
         x = np.tile(basic[:, np.newaxis], (1, len(basic))).reshape([-1])
         y = np.tile(basic, (len(basic),))
-        save_image_join(self.sess.run(self.decode, {
+        save_image_join(image_deprocess(self.sess.run(self.decode, {
             self.x: np.array([]).reshape([-1, self.x_width, self.x_height, self.x_channel]),
             self.code: np.dstack((x, y)).squeeze(),
             self.is_train: False
-        }), name=self.output_dir + 'test', n_each_row=len(basic))
+        })), name=self.output_dir + 'test', n_each_row=len(basic))
+
+    def test2(self, img):
+        img = resize(img, (self.x_width, self.x_height))
+        save_image(image_deprocess(self.sess.run(self.decode, {
+            self.x: img[np.newaxis, :],
+            self.is_train: False
+        })), name=self.output_dir + 'test2', n_each_row=1)
 
 
-MODE = 'train'
+MODE = 'test'
 
 
 def mnist_autoencoder_model():
@@ -161,12 +170,13 @@ def semi_supervised_mnist():
 
 
 def anime():
-    from zhongrj.data.anime_face import load_data
+    from zhongrj.data.lovely_girl import load_data as load_lovely_gril
+    from zhongrj.data.anime_face import load_data as load_anime_face
 
     model = AutoEncoder(
         name='AutoEncoder_anime',
         x_dims=[48, 48, 3],
-        y_dims=10,
+        y_dims=50,
         cnn_units=[40, 40, 40],
         dnn_units=[1024, 256],
         learning_rate=4e-4,
@@ -174,9 +184,11 @@ def anime():
     )
 
     if MODE == 'train':
-        model.train(load_data()['train_x'])
+        model.train(np.concatenate(
+            [load_lovely_gril()['train_x'][:5000], load_anime_face()['train_x'][:5000]]
+        ))
     elif MODE == 'test':
-        model.test()
+        model.test2(load_img('C:/Users/lenovo/Desktop/faces/test/{}.jpg'.format(0)))
 
 
 if __name__ == '__main__':

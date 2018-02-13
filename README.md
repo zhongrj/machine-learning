@@ -93,3 +93,12 @@ AutoEncoder
 <div>
   <img width="300px" src="https://github.com/zrj19931211/resource/blob/master/image/autoencoder_mnist.png"><br/>
 </div>
+
+
+### sample 10 可视化CNN
+
+CNN
+
+<div>
+  <img width="800px" src="https://github.com/zrj19931211/resource/blob/master/image/visualize_cnn.png"><br/>
+</div>
