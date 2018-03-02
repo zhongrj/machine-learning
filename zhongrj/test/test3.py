@@ -1,21 +1,81 @@
-import tensorflow as tf
+import zhongrj.test.module123 as module123
 
-a = tf.constant([0.1, 0.5, 0.9, 0.34])
-b = tf.cast(tf.less_equal(a, 0.5), tf.float32)
-w = tf.Variable(tf.zeros([4]), collections=['test', tf.GraphKeys.GLOBAL_VARIABLES])
-c = tf.add(a, w)
-# with tf.Session() as sess:
-#     print(sess.run(b))
-#     print(sess.run(tf.reduce_mean(b)))
+print(module123.__doc__)
+print(module123.__file__)
+print(__file__)
+
+print(__name__)
+print(module123.__name__)
+
+o = [2]
+a = [1, o, 3]
+b = a[1:]
+b[0][0] = 100
+print(b)
+print(a)
 
 
-f = tf.contrib.layers.batch_norm(c, is_training=False, scope='test')
-print(tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES))
+class A:
+    s = 0
 
-# from zhongrj.data.mnist import load_data
-# from zhongrj.utils.view_util import *
-#
-# data = load_data()
-# data = data['train_x'].reshape([-1, 28, 28])
-# for i in range(10):
-#     show_image(data[np.random.choice(len(data), 48)], n_each_row=8)
+    def test123(self):
+        print('test')
+
+    def __next__(self):
+        A.s += 1
+        if A.s == 10:
+            raise StopIteration
+        return A.s
+
+    def __iter__(self):
+        return self
+
+    def __dir__(self):
+        return [1, 2]
+
+    def __call__(self, *args, **kwargs):
+        print(args)
+        print(kwargs)
+
+    def __str__(self):
+        return 'A object ..............'
+
+    def __bool__(self):
+        print('bool')
+        return True
+
+
+for i in A():
+    print(i)
+
+print(dir(A()))
+print(dir([]))
+print(dir())
+print(callable(A()))
+A()(1, a=1)
+
+print(getattr([], '__add__'))
+print(list.__add__.__doc__)
+
+print(A())
+print(bool(A()))
+print(bool(0))
+
+print(callable(getattr([], '__add__')))
+
+print(getattr(A, 's'))
+
+getattr(A(), 'test123')()  # .__call__()
+
+print(100000 is 100000)
+print(100000 == 100000)
+
+a, b = lambda: 'a', lambda: 'b'
+print((1 and a or b)())
+# print(0 and a or b)
+
+print(dir({
+    1: 2
+}))
+
+print(repr({'1': 2}))

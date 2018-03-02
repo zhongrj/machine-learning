@@ -41,7 +41,7 @@ if __name__ == '__main__':
 Spatial Transformer Network + CNN
 
 <div>
-  <img width="250px" src="https://github.com/zrj19931211/resource/blob/master/image/stn_cnn_mnist_distortions_sample.gif"><br/>
+  <img width="250px" src="https://raw.githubusercontent.com/zrj19931211/resource/master/image/stn_cnn_mnist_distortions_sample.gif"><br/>
 </div>
 
 ### sample 2 侦测并识别图片中的猫狗
@@ -55,7 +55,7 @@ Spatial Transformer Network + CNN (未完成)
 DCGAN
 
 <div>
-  <img width="200px" src="https://github.com/zrj19931211/resource/blob/master/image/dcgan_generate_mnist_sample.gif"><br/>
+  <img width="200px" src="https://raw.githubusercontent.com/zrj19931211/resource/master/image/dcgan_generate_mnist_sample.gif"><br/>
 </div>
 
 ### sample 4 生成二次元妹子
@@ -68,7 +68,7 @@ DCGAN(未完成)
 DiscoGAN
 
 <div>
-  <img width="200px" src="https://github.com/zrj19931211/resource/blob/master/image/cyclegan_mnist_transform_sample.gif"><br/>
+  <img width="200px" src="https://raw.githubusercontent.com/zrj19931211/resource/master/image/cyclegan_mnist_transform_sample.gif"><br/>
 </div>
 
 ### sample 6 真人二次元转换
@@ -82,7 +82,7 @@ DiscoGAN(未完成)
 DQN、DDPG
 
 <div>
-  <img width="200px" src="https://github.com/zrj19931211/resource/blob/master/image/dqn_cartpole.gif"><br/>
+  <img width="200px" src="https://raw.githubusercontent.com/zrj19931211/resource/master/image/dqn_cartpole.gif"><br/>
 </div>
 
 
@@ -91,7 +91,7 @@ DQN、DDPG
 AutoEncoder
 
 <div>
-  <img width="300px" src="https://github.com/zrj19931211/resource/blob/master/image/autoencoder_mnist.png"><br/>
+  <img width="300px" src="https://raw.githubusercontent.com/zrj19931211/resource/master/image/autoencoder_mnist.png"><br/>
 </div>
 
 
@@ -100,5 +100,5 @@ AutoEncoder
 CNN
 
 <div>
-  <img width="800px" src="https://github.com/zrj19931211/resource/blob/master/image/visualize_cnn.png"><br/>
+  <img width="800px" src="https://raw.githubusercontent.com/zrj19931211/resource/master/image/visualize_cnn.png"><br/>
 </div>
